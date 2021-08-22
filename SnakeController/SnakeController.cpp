@@ -71,19 +71,14 @@ void Controller::receive(std::unique_ptr<Event> e)
         Segment const& currentHead = m_segments.front();
 
         Segment newHead;
-        newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
-        newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+        auto m_currentDirectionValue=(m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0;
+        newHead.x = currentHead.x + m_currentDirectionValue;
+        newHead.y = currentHead.y + (not m_currentDirectionValue);
         newHead.ttl = currentHead.ttl;
 
         bool lost = false;
 
-        for (auto segment : m_segments) {
-            if (segment.x == newHead.x and segment.y == newHead.y) {
-                m_scorePort.send(std::make_unique<EventT<LooseInd>>());
-                lost = true;
-                break;
-            }
-        }
+        isLost(newHead);
 
         if (not lost) {
             if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
@@ -190,6 +185,18 @@ void Controller::receive(std::unique_ptr<Event> e)
             }
         }
     }
+}
+
+void Controller::isLost(const Controller::Segment &newhead)
+{
+    for (auto segment : m_segments) {
+        if (segment.x == newHead.x and segment.y == newHead.y) {
+            m_scorePort.send(std::make_unique<EventT<LooseInd>>());
+            return true;
+            break;
+        }
+    }
+    return false;
 }
 
 } // namespace Snake
