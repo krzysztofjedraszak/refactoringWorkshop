@@ -31,7 +31,6 @@ public:
     Controller& operator=(Controller const& p_rhs) = delete;
 
     void receive(std::unique_ptr<Event> e) override;
-
 private:
     void handleTimePassed(const TimeoutInd&);
     void handleDirectionChange(const DirectionInd&);
