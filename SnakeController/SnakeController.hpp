@@ -31,6 +31,7 @@ public:
     Controller& operator=(Controller const& p_rhs) = delete;
 
     void receive(std::unique_ptr<Event> e) override;
+    void handlePause(const PauseInd& newPause);
 
 private:
     void handleTimePassed(const TimeoutInd&);
@@ -60,6 +61,7 @@ private:
     IPort& m_displayPort;
     IPort& m_foodPort;
     IPort& m_scorePort;
+    bool m_IsPaused=false;
 
     std::pair<int, int> m_mapDimension;
     std::pair<int, int> m_foodPosition;
